@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+  integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+  crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+  integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+  crossorigin=""></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <title>Frontend Mentor | IP Address Tracker</title>
+
+  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  <style>
+    .attribution { font-size: 11px; text-align: center; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+    
+    h1, body{
+      margin: 0;
+      
+    }
+  body{
+    font-family: 'Rubik', sans-serif;
+  }
+  h1{
+    text-align: center;
+    color:white;
+    padding:20px;
+    padding-bottom:15px;
+
+  }
+  /* main{
+    position: relative;
+  }
+  #map{
+      position: absolute;
+      top:0;
+      left:0
+    } */
+  form{
+text-align: center; 
+padding-bottom:15px;
+ }
+ form input{
+width: 50%;
+padding: 15px;
+border:none;
+font-size: 18px;
+border-radius: 12px;
+/* background-color: black; */
+
+ }
+    #map { height: 55vh;
+      
+  }
+    .info{
+      background-color: rgb(255, 255, 255);
+      width: 80%;
+      /* height: 100%; */
+      margin:0 auto;
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      
+     
+
+    }
+    p{
+      color: hsl(0, 0%, 59%);
+     
+      
+    }
+    #loc, #time, #isp{
+      border-left:1px solid hsl(0, 0%, 59%);
+      padding-left: 10px;
+      /* height: fit-content; */
+            
+
+    }
+   
+    pre{
+      color:#000;
+      font-weight: 700;
+      font-size: 18px;
+      display: block;
+    }
+    header{
+      
+      background-image: url("images/pattern-bg.png");
+      background-size: cover;
+    }
+
+
+    label {
+  position: relative;
+
+
+}
+
+label:before {
+  content: "";
+  position: absolute;
+  left: 670px;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  
+  background: url("images/icon-arrow.svg") center / contain no-repeat;
+  /* background-color: black; */
+
+}
+
+input:hover{
+  cursor: pointer;
+}
+
+
+
+
+
+@media screen and (max-width: 375px) {
+  body{
+    background-color: blueviolet;
+    box-sizing: border-box;
+
+  }
+  main{
+    margin:0;
+  }
+  #map { height: 50vh;
+    /* width:100vw; */
+    
+      
+    }
+   pre, #ip, #loc, #time, #isp{
+     margin: 5px;
+    border-left: none;
+   }
+      .info{
+        background-color: rgb(255, 255, 255);
+        width: 300px;
+        height:auto;
+        margin: 5px auto;
+
+        border-radius: 12px;
+        padding: 5px;
+        display: block;
+        text-align: center;
+        /* justify-content: space-between; */
+
+      }
+      header{
+        padding: 10px;
+      /* height: 50vh; */
+      background-image: url("images/pattern-bg.png");
+      background-size: 100%;
+    }
+    h1{
+      font-size: 1.5em;
+    }
+     form{
+      width:100%;
+      padding:0;
+    }
+    form input{
+width: 80%;
+margin: 5px auto;
+/* width: 50%; */
+padding: 15px;
+border:none;
+font-size: 15px;
+border-radius: 12px;
+/* background-color: black; */
+
+
+
+ }
+ 
+    #map-box{
+      margin-top: 0;
+    }
+            }
+
+
+
+  </style>
+</head>
+<body>
+
+ <main>
+<header>
+  <h1> IP Address Tracker</h1>
+  <form action="">
+    <label>
+      <input type="text" placeholder="Search for any IP address or domain" id="search">
+    </label>
+    
+  </form>
+
+  
+
+  <div class="info">
+    
+    <p id="ip">
+      IP Address
+      
+    </p>
+    
+    <p id="loc">
+      Location
+     
+    </p>
+   
+   <p id="time">
+    Timezone
+   
+   </p>
+  
+    <p id="isp">
+      ISP
+      
+    </p>
+  </div>
+</header>
+<div id="map-box">
+  <div id="map"></div>
+</div>
+  <!-- <div id="map"></div> -->
+
+ </main>
+
+
+
+
+
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type="application/javascript">
+    var input = document.getElementById("search");
+    function getIP(json) {
+      input.addEventListener("input", function(e) {
+  
+ 
+  // document.write("My public IP address is: ", json.ip);
+  var myIp = e.target.value;
+  // alert(myIp)
+  var api_key = "at_zll2Or5OWYKUJE9dT5z4sWUYRTZTW";
+$(function () {
+   $.ajax({
+       url: "https://geo.ipify.org/api/v1",
+       data: {apiKey: api_key, ipAddress: myIp},
+       success: function(data) {
+        $("#ip").html("");
+        $("#loc").html("");
+        $("#isp").html("");
+        $("#time").html("");
+        // $("#map").remove();
+        $("#map-box").html(""); 
+    $("#map-box").html('<div id="map"></div>');
+    // map init code
+           $("#ip").append( "<p>IP Address </p>" +"<pre>"+JSON.stringify(data["ip"]).replace(/['"]+/g, '')+ "</pre>");
+           $("#loc").append("<p>Location </p>" +"<pre>"+JSON.stringify(data["location"]["region"]).replace(/['"]+/g, '') + "," +JSON.stringify(data["location"]["country"])+ "</pre>");
+          
+           $("#isp").append("<p>ISP </p>" +"<pre>"+ JSON.stringify(data["isp"]).replace(/['"]+/g, '')+ "</pre>");
+           $("#time").append( "<p>TimeZone </p>" +"<pre>"+ "UTC" + JSON.stringify(data["location"]["timezone"]).replace(/['"]+/g, '')+ "</pre>");
+          //  $("body").append("<pre>"+ JSON.stringify(data,"",2)+"</pre>");
+       
+          var map = L.map('map').setView([JSON.stringify(data["location"]["lat"]),  JSON.stringify(data["location"]["lng"])], 13);
+          var marker = L.marker([JSON.stringify(data["location"]["lat"]),  JSON.stringify(data["location"]["lng"])]).addTo(map);
+          
+          L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          maxZoom: 18,
+          id: 'mapbox/streets-v11',
+          tileSize: 512,
+          zoomOffset: -1,
+          accessToken: 'pk.eyJ1Ijoia29zaGlyMCIsImEiOiJjbDNmdnNja20wMDZnM2NueDZsNjQxODRzIn0.JLbr1IIAiDrJeyMab5PUrw'
+      }).addTo(map);
+
+
+      L.marker([JSON.stringify(data["location"]["lat"]), JSON.stringify(data["location"]["lng"])]).addTo(map)
+    .bindPopup(JSON.stringify(data["location"]["region"]).replace(/['"]+/g, ''))
+    .openPopup();
+
+       }
+   });
+});
+});
+
+
+
+
+
+      // document.write("My public IP address is: ", json.ip);
+      var myIp = json.ip; 
+      var api_key = "at_zll2Or5OWYKUJE9dT5z4sWUYRTZTW";
+    $(function () {
+       $.ajax({
+           url: "https://geo.ipify.org/api/v1",
+           data: {apiKey: api_key, ipAddress: myIp},
+           success: function(data) {
+               $("#ip").append( "<pre>"+JSON.stringify(data["ip"]).replace(/['"]+/g, '')+ "</pre>");
+               $("#loc").append("<pre>"+JSON.stringify(data["location"]["region"]).replace(/['"]+/g, '') + "," +JSON.stringify(data["location"]["country"])+ "</pre>");
+              
+              //  $("body").append( JSON.stringify(data["location"]["lat"]));
+              //  $("body").append( JSON.stringify(data["location"]["lng"]));
+               $("#isp").append("<pre>"+ JSON.stringify(data["isp"]).replace(/['"]+/g, '')+ "</pre>");
+               $("#time").append( "<pre>"+ "UTC" +JSON.stringify(data["location"]["timezone"]).replace(/['"]+/g, '')+ "</pre>");
+              //  $("body").append("<pre>"+ JSON.stringify(data,"",2)+"</pre>");
+              var map = L.map('map').setView([JSON.stringify(data["location"]["lat"]),  JSON.stringify(data["location"]["lng"])], 13);
+          var marker = L.marker([JSON.stringify(data["location"]["lat"]),  JSON.stringify(data["location"]["lng"])]).addTo(map);
+
+              L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+              attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+              maxZoom: 18,
+              id: 'mapbox/streets-v11',
+              // id: 'mapbox/satellite-v9',
+              tileSize: 512,
+              zoomOffset: -1,
+              accessToken: 'pk.eyJ1Ijoia29zaGlyMCIsImEiOiJjbDNmdnNja20wMDZnM2NueDZsNjQxODRzIn0.JLbr1IIAiDrJeyMab5PUrw'
+          }).addTo(map);
+          L.marker([JSON.stringify(data["location"]["lat"]), JSON.stringify(data["location"]["lng"])]).addTo(map)
+    .bindPopup(JSON.stringify(data["location"]["region"]).replace(/['"]+/g, ''))
+    .openPopup();
+    // marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+
+           }
+       });
+    });
+
+    
+      
+    }
+  </script>
+    <script type="application/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
+  
+    
+
+    
+
+  
+ 
+  
+
+
+
+
+
+
+
+
+
+
+  <!-- <div class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
+    Coded by <a href="#">Your Name Here</a>.
+  </div> -->
+</body>
+</html>
